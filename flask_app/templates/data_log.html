@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="title">
+  The ID of your device is {{current_user.controller_id}}. Check if the incoming data is for you ;)
+</h3>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+      var socket = io();
+
+    // listen for mqtt_message events
+    // when a new message is received, log and append the data to the page
+    socket.on('mqtt_message', function(data) {
+      console.log(data);
+      var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];
+      $('#subscribe_messages').append(text + '<br><br>');
+    })
+  });
+</script>
+
+<div id="subscribe_messages"></div>
+{% endblock %}

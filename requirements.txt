@@ -1,0 +1,10 @@
+eventlet~=0.30.0
+Flask~=1.1.2
+Flask-SocketIO
+python-socketio
+paho-mqtt~=1.5.1
+Flask-HTTPAuth
+flask_login
+flask_sqlalchemy
+Werkzeug
+flask_mqtt
