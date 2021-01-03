@@ -15,9 +15,6 @@ controller-platform
 │   │   db.py
 │   │   models.py
 │   │
-│   └───static
-│   │   │   ...
-│   │
 │   └───templates
 │   │   │   ...
 
@@ -39,8 +36,8 @@ Lets walk through setting up your development environment and deploying this app
 
 2. Clone this repo and CD into the projects directory
 ```
-https://github.com/stsvetanov/controller-platform.git
-cd solah-platform-mqtt
+https://github.com/stsvetanov/controller-platform.git controller-platform
+cd controller-platform
 ```
 3. Create and activate a virtualenv
 ```
@@ -49,10 +46,11 @@ source venv/bin/activate
 ```
 4. Install packages
 ```
-pip install -r flask_app/requirements.txt
+pip install -r requirements.txt
 ```
 
 5. Run it
 ```
-python3 flask_app/app.py
+cd flask_app
+python3 app.py
 ```
