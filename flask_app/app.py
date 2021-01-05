@@ -36,16 +36,16 @@ PUBLISH_MQTT_TOPIC = 'my-smart-devices'
 mqtt = Mqtt(app)
 socketio = SocketIO(app)
 
-current_user_controller_id = None
+users_online_controller_id = set()
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Send initial MQTT message
+# Send initial MQTT message in order to simulate some devices
 devices_id_list = ['1', '2']
-mqtt.publish(topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100), retain=True)
+mqtt.publish(topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
 
 
 @mqtt.on_connect()
@@ -62,15 +62,17 @@ def handle_mqtt_message(client, userdata, message):
     parameter_name = split_topic[2]
     controller_id = split_topic[1]
 
-    if parameter_name == "boiler_temp" and controller_id == current_user_controller_id:
+
+    if parameter_name == "boiler_temp" and controller_id in users_online_controller_id:
         print(f'controller_id: {controller_id}, parameter_name: {parameter_name}, payload: {payload}')
-        print(f'Current user: {current_user_controller_id}')
+        print(f'Online controllers: {users_online_controller_id}')
 
         data = dict(
             topic=message.topic,
             payload=message.payload.decode()
         )
-        socketio.emit('mqtt_message', data=data)
+        socketio_topic = f'{controller_id}'
+        socketio.emit(socketio_topic, data=data)
 
         fill_db(topic, payload)
 
@@ -78,10 +80,12 @@ def handle_mqtt_message(client, userdata, message):
     time.sleep(1)
     mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
 
+
 @app.route('/')
 def index():
     return render_template("index.html")
     # return render_template("data_log.html")
+
 
 @app.route('/profile')
 @login_required
@@ -89,10 +93,12 @@ def profile():
 
     return render_template('profile.html', current_user=current_user)
 
+
 @app.route('/login')
 def login():
 
     return render_template('login.html')
+
 
 @app.route('/login', methods=['POST'])
 def login_post():
@@ -109,22 +115,26 @@ def login_post():
     login_user(user, remember=remember)
     return redirect(url_for('profile'))
 
+
 @app.route('/logout')
 @login_required
 def logout():
-    global current_user_controller_id
-    current_user_controller_id = None
+    global users_online_controller_id
+    users_online_controller_id.remove(current_user.controller_id)
     logout_user()
     return redirect(url_for('index'))
+
 
 # Shows real time incoming messages
 @app.route('/log')
 @login_required
 def log():
-    global current_user_controller_id
-    current_user_controller_id = current_user.controller_id
+
+    global users_online_controller_id
+    users_online_controller_id.add(current_user.controller_id)
 
     return render_template('data_log.html', current_user=current_user)
+
 
 # Show stored data
 @app.route('/data')
