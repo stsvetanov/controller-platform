@@ -8,3 +8,4 @@ flask_login
 flask_sqlalchemy
 Werkzeug
 flask_mqtt
+uuid

@@ -1,5 +1,5 @@
 import time
-
+import uuid
 import eventlet
 from eventlet import wsgi
 import random
@@ -36,7 +36,7 @@ PUBLISH_MQTT_TOPIC = 'my-smart-devices'
 mqtt = Mqtt(app)
 socketio = SocketIO(app)
 
-users_online_controller_id = set()
+users_online_controller_id = dict()
 
 
 @login_manager.user_loader
@@ -62,8 +62,9 @@ def handle_mqtt_message(client, userdata, message):
     parameter_name = split_topic[2]
     controller_id = split_topic[1]
 
-
-    if parameter_name == "boiler_temp" and controller_id in users_online_controller_id:
+    # Returns None if not such key
+    controller_id_to_check = users_online_controller_id.get(controller_id)
+    if parameter_name == "boiler_temp" and controller_id_to_check:
         print(f'controller_id: {controller_id}, parameter_name: {parameter_name}, payload: {payload}')
         print(f'Online controllers: {users_online_controller_id}')
 
@@ -71,7 +72,8 @@ def handle_mqtt_message(client, userdata, message):
             topic=message.topic,
             payload=message.payload.decode()
         )
-        socketio_topic = f'{controller_id}'
+
+        socketio_topic = f'{controller_id_to_check}'
         socketio.emit(socketio_topic, data=data)
 
         fill_db(topic, payload)
@@ -131,9 +133,10 @@ def logout():
 def log():
 
     global users_online_controller_id
-    users_online_controller_id.add(current_user.controller_id)
+    controller_id_hash = uuid.uuid4().hex
+    users_online_controller_id[current_user.controller_id] = controller_id_hash
 
-    return render_template('data_log.html', current_user=current_user)
+    return render_template('data_log.html', current_user=current_user, controller_id_hash=controller_id_hash)
 
 
 # Show stored data
