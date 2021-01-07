@@ -9,9 +9,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 
-from init import app, db, login_manager
-from models import User, BoilerTemp
-from db import fill_db
+from flask_app import app, db, login_manager
+from flask_app.models import User, BoilerTemp
+from flask_app.db import fill_db
 
 eventlet.monkey_patch()
 
@@ -45,6 +45,7 @@ def load_user(user_id):
 
 # Send initial MQTT message in order to simulate some devices
 devices_id_list = ['1', '2']
+
 mqtt.publish(topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
 
 

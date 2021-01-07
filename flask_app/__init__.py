@@ -12,3 +12,5 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 db = SQLAlchemy(app)
+
+from flask_app import routes
