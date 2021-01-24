@@ -1,7 +1,7 @@
+import eventlet
+eventlet.monkey_patch()
 import time
 import uuid
-import eventlet
-from eventlet import wsgi
 import random
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -12,9 +12,7 @@ from flask_socketio import SocketIO
 from flask_app import app, db, login_manager
 from flask_app.models import User, BoilerTemp
 from flask_app.db import fill_db
-
 eventlet.monkey_patch()
-
 # Create db and two example users if not exist
 # Use same credentials (email and password) to login
 db.create_all()
@@ -63,6 +61,7 @@ def handle_mqtt_message(client, userdata, message):
     parameter_name = split_topic[2]
     controller_id = split_topic[1]
 
+    print(f'controller_id: {controller_id}, parameter_name: {parameter_name}, payload: {payload}')
     # Returns None if not such key
     controller_id_to_check = users_online_controller_id.get(controller_id)
     if parameter_name == "boiler_temp" and controller_id_to_check:
@@ -136,6 +135,7 @@ def log():
     global users_online_controller_id
     controller_id_hash = uuid.uuid4().hex
     users_online_controller_id[current_user.controller_id] = controller_id_hash
+    print(controller_id_hash)
 
     return render_template('data_log.html', current_user=current_user, controller_id_hash=controller_id_hash)
 
@@ -147,5 +147,3 @@ def data():
     boiler_temp_data = BoilerTemp.query.filter_by(controller_id=current_user.controller_id).all()
 
     return render_template('stored_data.html', boiler_temp_data=boiler_temp_data)
-
-wsgi.server(eventlet.listen(('', 5000)), app, debug=True)

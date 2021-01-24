@@ -1,0 +1,13 @@
+{% block content %}
+<html>
+   <body>
+      <form action = "http://localhost:5000/login" method = "post">
+         <p>The controller's ID bellow will be linked to your account.</p>
+         <p><input type = "text" name = "email" /></p>
+         <p><input type = "text" name = "name" /></p>
+         <p><input type = "text" name = "controller_id" value="{{controller_id}}" /></p>
+         <p><input type = "submit" value = "Register" /></p>
+      </form>
+   </body>
+</html>
+{% endblock %}
