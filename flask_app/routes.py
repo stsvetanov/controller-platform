@@ -43,8 +43,7 @@ def load_user(user_id):
 
 # Send initial MQTT message in order to simulate some devices
 devices_id_list = ['1', '2']
-
-mqtt.publish(topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
+mqtt.publish(topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100), retain=True)
 
 
 @mqtt.on_connect()
