@@ -8,9 +8,10 @@ controller-platform
 │   README.md
 │   .gitignore
 │   requirements.txt
+|   wsgi.py
 │
 └───flask_app
-│   │   init.py
+│   │   __init__.py
 │   │   app.py
 │   │   db.py
 │   │   models.py
@@ -21,8 +22,8 @@ controller-platform
 ```
 
 ## Flask Frameworks
-These are the [Flask](http://flask.pocoo.org/docs/1.0/) libraries used in this Project. You'll find these in the requirements.txt file.
-- [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)
+These are some of the [Flask](https://flask.palletsprojects.com/en/1.1.x/) libraries used in this Project. You'll find these in the requirements.txt file.
+- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
 - [Flask-Login](https://flask-login.readthedocs.io/en/latest//)
 
 
@@ -51,6 +52,5 @@ pip install -r requirements.txt
 
 5. Run it
 ```
-cd flask_app
-python3 app.py
+python3 wsgi.py
 ```
