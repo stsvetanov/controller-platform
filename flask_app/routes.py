@@ -83,8 +83,8 @@ def handle_mqtt_message(client, userdata, message):
         fill_db(topic, payload)
 
     # Send next MQTT message
-    time.sleep(1)
-    mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
+    # time.sleep(1)
+    # mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
 
 
 @app.route('/')
@@ -121,9 +121,9 @@ def login_post():
 
     login_user(user, remember=remember)
 
-    # global users_online_controller_id
-    # controller_id_hash = uuid.uuid4().hex
-    # users_online_controller_id[current_user.controller_id] = controller_id_hash
+    global users_online_controller_id
+    controller_id_hash = uuid.uuid4().hex
+    users_online_controller_id[current_user.controller_id] = controller_id_hash
 
     return redirect(url_for('profile'))
 
@@ -141,9 +141,7 @@ def logout():
 @app.route('/log')
 @login_required
 def log():
-    global users_online_controller_id
-    controller_id_hash = uuid.uuid4().hex
-    users_online_controller_id[current_user.controller_id] = controller_id_hash
+    controller_id_hash = users_online_controller_id.get(current_user.controller_id)
 
     return render_template('data_log.html', current_user=current_user, controller_id_hash=controller_id_hash)
 
@@ -155,3 +153,11 @@ def data():
     boiler_temp_data = BoilerTemp.query.filter_by(controller_id=current_user.controller_id).all()
 
     return render_template('stored_data.html', boiler_temp_data=boiler_temp_data)
+
+@app.route('/mqtt_client')
+@login_required
+def mqtt_client():
+    # topic = request.form.get('mqtt_topic')
+    message = request.form.get('mqtt_message')
+    mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=message)
+    return render_template('mqtt_client.html', current_user=current_user)
