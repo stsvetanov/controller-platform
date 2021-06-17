@@ -34,7 +34,7 @@ PUBLISH_MQTT_TOPIC = 'my-smart-devices'
 mqtt = Mqtt(app)
 socketio = SocketIO(app)
 
-users_online_controller_id = dict()
+users_online_controller_id = {}
 
 
 @login_manager.user_loader
@@ -114,11 +114,17 @@ def login_post():
 
     user = User.query.filter_by(email=email).first()
 
-    if not user and not check_password_hash(user.password, password):
+    if not user or not check_password_hash(user.password, password):
+    # if not (user and check_password_hash(user.password, password)):
         flash('Please check your login details and try again.')
         return redirect(url_for('login'))
 
     login_user(user, remember=remember)
+
+    # global users_online_controller_id
+    # controller_id_hash = uuid.uuid4().hex
+    # users_online_controller_id[current_user.controller_id] = controller_id_hash
+
     return redirect(url_for('profile'))
 
 
@@ -126,7 +132,7 @@ def login_post():
 @login_required
 def logout():
     global users_online_controller_id
-    users_online_controller_id.remove(current_user.controller_id)
+    del users_online_controller_id[current_user.controller_id]
     logout_user()
     return redirect(url_for('index'))
 
@@ -135,11 +141,9 @@ def logout():
 @app.route('/log')
 @login_required
 def log():
-
     global users_online_controller_id
     controller_id_hash = uuid.uuid4().hex
     users_online_controller_id[current_user.controller_id] = controller_id_hash
-    print(controller_id_hash)
 
     return render_template('data_log.html', current_user=current_user, controller_id_hash=controller_id_hash)
 
