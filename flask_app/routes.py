@@ -58,7 +58,7 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    payload = int(message.payload)
+    payload = message.payload
     topic = message.topic
 
     split_topic = topic.split('/')
@@ -102,7 +102,6 @@ def profile():
 
 @app.route('/login')
 def login():
-
     return render_template('login.html')
 
 
@@ -145,7 +144,6 @@ def log():
 
     return render_template('data_log.html', current_user=current_user, controller_id_hash=controller_id_hash)
 
-
 # Show stored data
 @app.route('/data')
 @login_required
@@ -157,7 +155,12 @@ def data():
 @app.route('/mqtt_client')
 @login_required
 def mqtt_client():
+    return render_template('mqtt_client.html')
+
+@app.route('/mqtt_client', methods=['POST'])
+@login_required
+def mqtt_client_post():
     # topic = request.form.get('mqtt_topic')
     message = request.form.get('mqtt_message')
     mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=message)
-    return render_template('mqtt_client.html', current_user=current_user)
+    return redirect(url_for('mqtt_client'))
