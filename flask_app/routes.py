@@ -12,6 +12,7 @@ from flask_socketio import SocketIO
 from flask_app import app, db, login_manager
 from flask_app.models import User, BoilerTemp
 from flask_app.db import fill_db
+
 eventlet.monkey_patch()
 # Create db and two example users if not exist
 # Use same credentials (email and password) to login
@@ -80,7 +81,7 @@ def handle_mqtt_message(client, userdata, message):
         socketio_topic = f'{controller_id_to_check}'
         socketio.emit(socketio_topic, data=data)
 
-        fill_db(topic, payload)
+    fill_db(topic, payload)
 
     # Send next MQTT message
     time.sleep(1)
