@@ -54,3 +54,5 @@ pip install -r requirements.txt
 ```
 python3 wsgi.py
 ```
+
+6. Open localhost:5000
