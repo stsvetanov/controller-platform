@@ -47,7 +47,7 @@ devices_id_list = ['1', '2']
 mqtt.publish(
     topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp',
     payload=random.randrange(0, 100),
-    retain=True
+    retain=False
 )
 
 
@@ -83,8 +83,8 @@ def handle_mqtt_message(client, userdata, message):
         fill_db(topic, payload)
 
     # Send next MQTT message
-    # time.sleep(1)
-    # mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
+    time.sleep(1)
+    mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
 
 
 @app.route('/')
