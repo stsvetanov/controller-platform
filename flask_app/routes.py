@@ -59,7 +59,7 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    payload = message.payload
+    payload = int(message.payload)
     topic = message.topic
 
     split_topic = topic.split('/')
@@ -132,7 +132,8 @@ def login_post():
 @login_required
 def logout():
     global users_online_controller_id
-    del users_online_controller_id[current_user.controller_id]
+    if users_online_controller_id.get(current_user.controller_id):
+        del users_online_controller_id[current_user.controller_id]
     logout_user()
     return redirect(url_for('index'))
 
@@ -151,7 +152,7 @@ def log():
 def data():
     boiler_temp_data = BoilerTemp.query.filter_by(controller_id=current_user.controller_id).all()
 
-    return render_template('stored_data.html', boiler_temp_data=boiler_temp_data)
+    return render_template('stored_data.html', boiler_temp_data=reversed(boiler_temp_data))
 
 @app.route('/mqtt_client')
 @login_required
