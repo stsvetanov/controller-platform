@@ -9,23 +9,25 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 
-from flask_app import app, db, login_manager
-from flask_app.models import User, BoilerTemp
+from flask_app import app, login_manager
+from flask_app.models import db, User, BoilerTemp
 from flask_app.db import fill_db
 
-eventlet.monkey_patch()
+# eventlet.monkey_patch()
 # Create db and two example users if not exist
 # Use same credentials (email and password) to login
-db.create_all()
-db.session.commit()
 
-user = User.query.first()
-if not user:
-    user_1 = User(email="user1@mail.com", controller_id=1, password=generate_password_hash("password", method='sha256'))
-    user_2 = User(email="user2@mail.com", controller_id=2, password=generate_password_hash("password", method='sha256'))
-    db.session.add(user_1)
-    db.session.add(user_2)
+with app.app_context():
+    db.create_all()
     db.session.commit()
+
+    user = User.query.first()
+    if not user:
+        user_1 = User(email="user1@mail.com", controller_id=1, password=generate_password_hash("password", method='scrypt', salt_length=16))
+        user_2 = User(email="user2@mail.com", controller_id=2, password=generate_password_hash("password", method='scrypt', salt_length=16))
+        db.session.add(user_1)
+        db.session.add(user_2)
+        db.session.commit()
 
 app.config['MQTT_BROKER_URL'] = 'broker.hivemq.com'
 app.config['MQTT_BROKER_PORT'] = 1883
@@ -43,12 +45,11 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# Send initial MQTT message in order to simulate some devices
+# Send initial MQTT message in order to start the loop
 devices_id_list = ['1', '2']
 mqtt.publish(
     topic=f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp',
-    payload=random.randrange(0, 100),
-    retain=False
+    payload=random.randrange(0, 100)
 )
 
 
@@ -66,7 +67,7 @@ def handle_mqtt_message(client, userdata, message):
     parameter_name = split_topic[2]
     controller_id = split_topic[1]
 
-    print(f'controller_id: {controller_id}, parameter_name: {parameter_name}, payload: {payload}')
+    # print(f"controller_id: {controller_id}, parameter_name: {parameter_name}, payload: {payload}")
     # Returns None if not such key
     controller_id_to_check = users_online_controller_id.get(controller_id)
     if parameter_name == "boiler_temp" and controller_id_to_check:
@@ -84,7 +85,7 @@ def handle_mqtt_message(client, userdata, message):
     fill_db(topic, payload)
 
     # Send next MQTT message
-    time.sleep(1)
+    time.sleep(3)
     mqtt.publish(f'{PUBLISH_MQTT_TOPIC}/{random.choice(devices_id_list)}/boiler_temp', payload=random.randrange(0, 100))
 
 
@@ -97,7 +98,6 @@ def index():
 @app.route('/profile')
 @login_required
 def profile():
-
     return render_template('profile.html', current_user=current_user)
 
 
@@ -143,15 +143,15 @@ def logout():
 @login_required
 def log():
     controller_id_hash = users_online_controller_id.get(current_user.controller_id)
-
     return render_template('data_log.html', current_user=current_user, controller_id_hash=controller_id_hash)
 
 # Show stored data
 @app.route('/data')
 @login_required
 def data():
+    print(current_user.controller_id)
     boiler_temp_data = BoilerTemp.query.filter_by(controller_id=current_user.controller_id).all()
-
+    print(boiler_temp_data[10:])
     return render_template('stored_data.html', boiler_temp_data=reversed(boiler_temp_data))
 
 @app.route('/mqtt_client')

@@ -5,5 +5,6 @@ from eventlet import wsgi
 from flask_app import app
 
 if __name__ == "__main__":
+    # app.run()
     wsgi.server(eventlet.listen(('', 5000)), app, debug=True)
 
