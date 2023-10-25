@@ -7,7 +7,7 @@ def fill_db(path, parameter):
     conn = None
     time_stamp = datetime.now()
     try:
-        conn = sqlite3.connect('flask_app/user_inputs.db')
+        conn = sqlite3.connect('web_app.db')
         cur = conn.cursor()
         split_topic = path.split('/')
         parameter_name = split_topic[2]

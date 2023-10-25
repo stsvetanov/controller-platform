@@ -9,17 +9,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 
-from flask_app import app, login_manager
-from flask_app.models import db, User, BoilerTemp
-from flask_app.db import fill_db
+from app.extensions import db, login_manager
+from .models import User, BoilerTemp
+from app.db import fill_db
+from server import app
 
 # eventlet.monkey_patch()
 # Create db and two example users if not exist
 # Use same credentials (email and password) to login
 
 with app.app_context():
-    db.create_all()
-    db.session.commit()
+    boiler_temp_data = BoilerTemp.query.filter_by(controller_id=1).all()
+    print(boiler_temp_data[10:])
 
     user = User.query.first()
     if not user:
@@ -29,8 +30,7 @@ with app.app_context():
         db.session.add(user_2)
         db.session.commit()
 
-app.config['MQTT_BROKER_URL'] = 'broker.hivemq.com'
-app.config['MQTT_BROKER_PORT'] = 1883
+
 SUBSCRIBE_MQTT_TOPIC = 'my-smart-devices/#'
 PUBLISH_MQTT_TOPIC = 'my-smart-devices'
 

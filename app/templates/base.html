@@ -19,37 +19,37 @@
                     <div id="navbarMenuHeroA" class="navbar-menu">
                         <div class="navbar-end">
                             {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('log') }}" class="navbar-item">
+                            <a href="{{ url_for('data_view.streaming_data') }}" class="navbar-item">
                                 Incoming
                             </a>
                             {% endif %}
 
                             {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('data') }}" class="navbar-item">
+                            <a href="{{ url_for('data_view.static_data') }}" class="navbar-item">
                                 Stored
                             </a>
                             {% endif %}
 
                             {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('mqtt_client') }}" class="navbar-item">
+                            <a href="{{ url_for('communication.mqtt_client') }}" class="navbar-item">
                                 MQTT Client
                             </a>
                             {% endif %}
 
                             {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('profile') }}" class="navbar-item">
+                            <a href="{{ url_for('user.profile') }}" class="navbar-item">
                                 Profile
                             </a>
                             {% endif %}
 
                             {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('login') }}" class="navbar-item">
+                            <a href="{{ url_for('user.login') }}" class="navbar-item">
                                 Login
                             </a>
                             {% endif %}
 
                             {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('logout') }}" class="navbar-item">
+                            <a href="{{ url_for('user.logout') }}" class="navbar-item">
                                 Logout
                             </a>
                             {% endif %}

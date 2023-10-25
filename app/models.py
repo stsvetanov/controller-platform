@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from flask_app import db
+from app.extensions import db
 
 
 class User(UserMixin, db.Model):
@@ -32,3 +32,8 @@ class MfbTemp(db.Model):
     time_stamp = db.Column(db.TIMESTAMP(timezone=False), nullable=False)
 
 
+if __name__ == "__main__":
+    # Run this file directly to create the database tables.
+    print("Creating database tables...")
+    db.create_all()
+    print("Done!")
