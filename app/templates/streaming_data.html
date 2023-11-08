@@ -3,7 +3,6 @@
 {% block content %}
 <h3 class="title">
   The ID of your device is {{current_user.controller_id}}. Check if the incoming data is for you ;)
-  {{controller_id_hash}}
 </h3>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -12,10 +11,6 @@
   $(document).ready(function() {
       var socket = io();
       // socket = io.connect('http://' + document.domain + ':' + location.port);
-
-    // listen for mqtt_message events
-    // when a new message is received, log and append the data to the page
-    // socket.on('mqtt_message', function(data) {
     socket.on("{{controller_id_hash}}", function(data) {
       console.log(data);
       var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];

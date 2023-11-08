@@ -4,6 +4,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
 from app.models import User
 from app.extensions import login_manager
+from app.extensions import controller_id_to_hash
 
 
 bp = Blueprint('user', __name__)
@@ -20,7 +21,6 @@ def index():
 
 
 @bp.route('/profile')
-@login_required
 def profile():
     return render_template('profile.html', current_user=current_user)
 
@@ -45,9 +45,8 @@ def login_post():
 
     login_user(user, remember=remember)
 
-    # global users_online_controller_id
-    # controller_id_hash = uuid.uuid4().hex
-    # users_online_controller_id[current_user.controller_id] = controller_id_hash
+    controller_id_hash = uuid.uuid4().hex
+    controller_id_to_hash[current_user.controller_id] = controller_id_hash
 
     return redirect(url_for('user.profile'))
 
@@ -55,8 +54,7 @@ def login_post():
 @bp.route('/logout')
 @login_required
 def logout():
-    # global users_online_controller_id
-    # if users_online_controller_id.get(current_user.controller_id):
-    #     del users_online_controller_id[current_user.controller_id]
+    if controller_id_to_hash.get(current_user.controller_id):
+        del controller_id_to_hash[current_user.controller_id]
     logout_user()
     return redirect(url_for('user.index'))

@@ -1,8 +1,10 @@
-# Flask Web Application
-This is a simple Web Application where the users can log in, view the data from their devices and control them.
+# Web Application
+This is a simple web application for viewing data from IoT devices.
+The application connects to MQTT broker and store the incoming data in a database.
+If the owner of the devices is currently connected, the received MQTT message is forwarded to the client (web browser) via SocketIO implementing stream processing.
 
 ## Application Breakdown
-This is the breakdown of the web application. The current version uses [SQLite](https://www.sqlite.org/index.html) database
+This is the breakdown of the web application. The current version uses [SQLite](https://www.sqlite.org/index.html) database.
 ```
 controller-platform
 │   README.md
@@ -13,7 +15,6 @@ controller-platform
 └───flask_app
 │   │   __init__.py
 │   │   app.py
-│   │   db.py
 │   │   models.py
 │   │
 │   └───templates
@@ -28,7 +29,7 @@ These are some of the [Flask](https://flask.palletsprojects.com/en/1.1.x/) libra
 
 
 ## Deploying Locally
-Lets walk through setting up your development environment and deploying this application on your local machine
+Let's walk through setting up your development environment and deploying this application on your local machine.
 
 1. Install Python, pip, and virtualenv
   - [Python](https://www.python.org/)
@@ -52,6 +53,7 @@ pip install -r requirements.txt
 
 5. Run it
 ```
+python3 create_users.py
 python3 wsgi.py
 ```
 

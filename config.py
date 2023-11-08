@@ -1,5 +1,5 @@
 import os
-from secret import secret_key
+import secrets
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -11,9 +11,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # MQTT configuration
-    MQTT_BROKER_URL = 'broker.hivemq.com'
+    # MQTT_BROKER_URL = 'broker.hivemq.com'
+    MQTT_BROKER_URL = 'test.mosquitto.org'
     MQTT_BROKER_PORT = 1883
     MQTT_TOPIC = 'my-smart-devices'
 
     # Session configuration
-    SECRET_KEY = secret_key
+    SECRET_KEY = secrets.token_urlsafe(16)
