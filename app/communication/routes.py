@@ -5,7 +5,7 @@ from flask import Blueprint, current_app, render_template
 from flask_login import login_required, current_user
 from app.extensions import mqtt, socketio
 # from app.utils import fill_db
-from app.models import fill_db
+from app.models import fill_db2
 from app.extensions import controller_id_to_hash
 
 bp = Blueprint('communication', __name__)
@@ -55,6 +55,7 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
+
     payload = int(message.payload)
     topic = message.topic
 
@@ -66,6 +67,7 @@ def handle_mqtt_message(client, userdata, message):
     # Returns None if not such key
     controller_id_hash = controller_id_to_hash.get(controller_id)
     if parameter_name == "boiler_temp" and controller_id_hash:
+    # if parameter_name == "boiler_temp" and current_user.id:
         print(f'controller_id: {controller_id}, parameter_name: {parameter_name}, payload: {payload}')
         print(f'Online controllers: {controller_id_to_hash}')
 
@@ -77,7 +79,7 @@ def handle_mqtt_message(client, userdata, message):
         socketio_topic = f'{controller_id_hash}'
         socketio.emit(socketio_topic, data=data)
 
-    fill_db(topic, payload)
+    fill_db2(topic, payload, mqtt.app)
 
     # Send next MQTT message
     time.sleep(3)

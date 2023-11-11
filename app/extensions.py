@@ -5,7 +5,7 @@ from flask_socketio import SocketIO
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-mqtt = Mqtt()
+mqtt = Mqtt(connect_async=True)
 socketio = SocketIO()
 
 # The dictionary bellow could be replaced with a key, value database.

@@ -22,6 +22,11 @@ def streaming_data():
 @bp.route('/static_data')
 @login_required
 def static_data():
-    print(current_user.controller_id)
-    boiler_temp_data = BoilerTemp.query.filter_by(controller_id=current_user.controller_id).all()
-    return render_template('static_data.html', boiler_temp_data=reversed(boiler_temp_data))
+    boiler_temp_data = (BoilerTemp.query
+                        .filter_by(controller_id=current_user.controller_id)
+                        .order_by(BoilerTemp.time_stamp.desc())
+                        .limit(15)
+                        # [:15]
+                        # .all()
+                        )
+    return render_template('static_data.html', boiler_temp_data=boiler_temp_data)

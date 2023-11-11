@@ -18,6 +18,7 @@ def create_app(config_class=Config):
     # login_manager.login_view = 'login'
     login_manager.init_app(app)
 
+    mqtt.app = app
     mqtt.init_app(app)
     socketio.init_app(app)
 
